@@ -6,6 +6,7 @@ use App\Enums\FirewallRuleStatus;
 use App\Enums\ServerProvider;
 use App\Enums\ServerStatus;
 use App\Facades\Notifier;
+use App\Jobs\CreateServerFromProvider;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
@@ -60,7 +61,7 @@ class CreateServer
             $this->createFirewallRules($server);
 
             // create instance
-            $server->provider()->create();
+            CreateServerFromProvider::dispatch($server)->onQueue('high');
 
             // add services
             $server->type()->createServices($input);
